@@ -26,8 +26,8 @@ urls = [
 # Document list to be worked on
 your_documents = []
 
-stop_words = set(stopwords.words('english')).union({"-", "\'"})
-custom_stop_words = set(["-", "\'"])
+stop_words = set(stopwords.words('english')).union({"-","_", "'"})
+custom_stop_words = set(["-", "'", "_"])
 
 
 # Function to clean and preprocess text
@@ -99,7 +99,7 @@ def get_topics_and_summary(url):
         top_topic = topics[0]
 
         # Get the terms associated with the top topic
-        top_topic_terms = lda_model.print_topic(top_topic[0])
+        top_topic_terms = lda_model.print_topic(0)#or top_topic[0]
 
         # Convert top_topic strength to a serializable data type (e.g., float64)
         top_topic_strength = float(top_topic[1])
