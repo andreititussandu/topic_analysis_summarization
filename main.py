@@ -124,7 +124,7 @@ def get_url():
     top_topic_strength=result["top_topic_strength"], summary=result["summary"])
     #return jsonify(result)
 
-@app.route('/analyze', methods=5)
+@app.route('/analyze', methods=['POST'])
 def analyze_url():
     try:
         data = request.get_json()
