@@ -61,7 +61,7 @@ def scraping(urls):
             print(f"Error processing URL {url}: {e}")
 
 
-scraping(url)
+scraping(urls)
 
 # Create a Dictionary object from your documents
 dictionary = Dictionary(your_documents)
