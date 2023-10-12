@@ -116,6 +116,12 @@ def get_topics_and_summary(url):
         return {"error": str(e)}
 
 
+@app.route('/', methods=['GET'])
+def get_url():
+    url = "https://www.infoworld.com/article/3204016/what-is-python-powerful-intuitive-programming.html"
+    result = get_topics_and_summary(url)
+    return jsonify(result)
+
 @app.route('/analyze', methods=['POST'])
 def analyze_url():
     try:
