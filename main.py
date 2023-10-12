@@ -116,7 +116,7 @@ def get_topics_and_summary(url):
         return {"error": str(e)}
 
 
-@app.route('/', methods=['GET'])
+@app.route('/analyze', methods=['GET'])
 def get_url():
     url = "https://www.infoworld.com/article/3204016/what-is-python-powerful-intuitive-programming.html"
     result = get_topics_and_summary(url)
@@ -128,9 +128,9 @@ def analyze_url():
         data = request.get_json()
         url = data.get('url')
         result = get_topics_and_summary(url)
-        # return render_template('result.html', top_topic=result["top_topic"],
-        # top_topic_strength=result["top_topic_strength"], summary=result["summary"])
-        return jsonify(result)
+        return render_template('result.html', top_topic=result["top_topic"],
+        top_topic_strength=result["top_topic_strength"], summary=result["summary"])
+        #return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)})
 
