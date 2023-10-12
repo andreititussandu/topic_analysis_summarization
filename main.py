@@ -23,7 +23,7 @@ urls = [
     "https://www.infoworld.com/article/3204016/what-is-python-powerful-intuitive-programming.html",
     "https://www.football365.com/news/summer-transfer-window-2023-most-expensive-players-biggest-deals"
 ]
-
+# Document list to be worked on
 your_documents = []
 
 stop_words = set(stopwords.words('english')).union({"-", "\'"})
@@ -70,7 +70,7 @@ dictionary = Dictionary(your_documents)
 corpus = [dictionary.doc2bow(doc) for doc in your_documents]
 
 # Train the LDA model
-lda_model = LdaModel(corpus, id2word=dictionary, num_topics=5)
+lda_model = LdaModel(corpus, id2word=dictionary, num_topics=3)
 
 
 # Function to get topics and summary for a URL
@@ -98,6 +98,9 @@ def get_topics_and_summary(url):
         # Extract the top topic and its strength
         top_topic = topics[0]
 
+        # Get the terms associated with the top topic
+        top_topic_terms = lda_model.print_topic(top_topic[0])
+
         # Convert top_topic strength to a serializable data type (e.g., float64)
         top_topic_strength = float(top_topic[1])
 
@@ -109,6 +112,7 @@ def get_topics_and_summary(url):
 
         return {
             "top_topic": top_topic[0],
+            "top_topic_terms": top_topic_terms,
             "top_topic_strength": top_topic_strength,
             "summary": summary
         }
@@ -120,9 +124,10 @@ def get_topics_and_summary(url):
 def get_url():
     url = "https://www.infoworld.com/article/3204016/what-is-python-powerful-intuitive-programming.html"
     result = get_topics_and_summary(url)
-    return render_template('result.html', top_topic=result["top_topic"],
-    top_topic_strength=result["top_topic_strength"], summary=result["summary"])
-    #return jsonify(result)
+    return render_template('result.html', top_topic=result["top_topic"], top_topic_terms=result["top_topic_terms"],
+                           top_topic_strength=result["top_topic_strength"], summary=result["summary"])
+    # return jsonify(result)
+
 
 @app.route('/analyze', methods=['POST'])
 def analyze_url():
@@ -131,8 +136,8 @@ def analyze_url():
         url = data.get('url')
         result = get_topics_and_summary(url)
         return render_template('result.html', top_topic=result["top_topic"],
-        top_topic_strength=result["top_topic_strength"], summary=result["summary"])
-        #return jsonify(result)
+                               top_topic_strength=result["top_topic_strength"], summary=result["summary"])
+        # return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)})
 
