@@ -120,7 +120,7 @@ def get_topics_and_summary(url):
         return {"error": str(e)}
 
 
-@app.route('/analyze', methods=['GET'])
+@app.route('/get', methods=['GET'])
 def get_url():
     url = "https://www.infoworld.com/article/3204016/what-is-python-powerful-intuitive-programming.html"
     result = get_topics_and_summary(url)
