@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client-Side GET Request</title>
+</head>
+<body>
+    <h1>GET Request</h1>
+    <form action="/get" method="GET">
+        <input type="text" name="url" placeholder="Enter URL">
+        <button type="submit">Analyze URL</button>
+    </form>
+
+    <script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var urlInputs = document.querySelectorAll('input[name="url"]');
+        var urls = [];
+
+        urlInputs.forEach(function(input) {
+            urls.push(input.value);
+        });
+
+        var urlQueryString = urls.map(url => 'url=' + encodeURIComponent(url)).join('&');
+        fetch('/get?' + urlQueryString, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = "Response: " + JSON.stringify(data);
+            });
+    });
+    </script>
+</body>
+</html>

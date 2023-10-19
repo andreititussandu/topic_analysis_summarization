@@ -10,6 +10,7 @@ from nltk.corpus import stopwords
 import string
 import tensorflow as tf
 import nltk
+import pandas as pd
 
 print(tf.__version__)
 
@@ -26,7 +27,7 @@ urls = [
 # Document list to be worked on
 your_documents = []
 
-stop_words = set(stopwords.words('english')).union({"-","_", "'"})
+stop_words = set(stopwords.words('english')).union({"-", "_", "'"})
 custom_stop_words = set(["-", "'", "_"])
 
 
@@ -99,7 +100,7 @@ def get_topics_and_summary(url):
         top_topic = topics[0]
 
         # Get the terms associated with the top topic
-        top_topic_terms = lda_model.print_topic(0)#or top_topic[0]
+        top_topic_terms = lda_model.print_topic(0)  # or top_topic[0]
 
         # Convert top_topic strength to a serializable data type (e.g., float64)
         top_topic_strength = float(top_topic[1])
@@ -121,23 +122,36 @@ def get_topics_and_summary(url):
 
 
 @app.route('/get', methods=['GET'])
-def get_url():
-    url = "https://www.infoworld.com/article/3204016/what-is-python-powerful-intuitive-programming.html"
-    result = get_topics_and_summary(url)
-    return render_template('result.html', top_topic=result["top_topic"], top_topic_terms=result["top_topic_terms"],
-                           top_topic_strength=result["top_topic_strength"], summary=result["summary"])
-    # return jsonify(result)
+def get_urls():
+    try:
+        dataset = pd.read_csv('C:\\Users\\asand\\PycharmProjects\\Licenta\\website_classification.csv')
+        df = dataset[['website_url', 'cleaned_website_text', 'Category']].copy()
+        urls = request.args.getlist('url')  # Use request.args to get a list of URLs
+
+        print(df.head())
+
+        results = []
+        for url in urls:
+            result = get_topics_and_summary(url)
+            results.append(result)
+
+        return jsonify(results)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 @app.route('/analyze', methods=['POST'])
-def analyze_url():
+def analyze_urls():
     try:
         data = request.get_json()
-        url = data.get('url')
-        result = get_topics_and_summary(url)
-        return render_template('result.html', top_topic=result["top_topic"],
-                               top_topic_strength=result["top_topic_strength"], summary=result["summary"])
-        # return jsonify(result)
+        urls = data.get('urls')
+        results = []
+        for url in urls:
+            result = get_topics_and_summary(url)
+            results.append(result)
+        return jsonify(results)
+
     except Exception as e:
         return jsonify({"error": str(e)})
 
