@@ -12,7 +12,7 @@ import tensorflow as tf
 import nltk
 import pandas as pd
 
-#print(tf.__version__)
+# print(tf.__version__)
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -121,48 +121,67 @@ def get_topics_and_summary(url):
         return {"error": str(e)}
 
 
-@app.route('/trateaza', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def get_urls():
     try:
-        dataset = pd.read_csv('C:\\Users\\asand\\PycharmProjects\\Licenta\\website_classification.csv')
+        dataset = pd.read_csv(
+            '/Users/dennissaadeddin/Documents/Web Dev/Titus/topic_analysis_summarization/website_classification.csv')
         df = dataset[['website_url', 'cleaned_website_text', 'Category']].copy()
         urls = request.args.getlist('url')  # Use request.args to get a list of URLs
 
         # print(df.head())
         # print(pd.DataFrame(df.cleaned_website_text.unique()).values)
         results = []
+        topic_summary_list = []
         if request.method == 'POST':
             try:
+                print('it is a POST method')
                 topic_summary_list = get_topics_and_summary(urls[0])
                 # for url in urls:
                 #     get_topics_and_summary(url)
                 #     # results.append(result)
-                return render_template('get.html', top_topic=topic_summary_list[0], top_topic_terms=topic_summary_list[1], top_topic_strength=topic_summary_list[2], summary=topic_summary_list[3])
-                #return render_template('get.html')
+                # return render_template('index.html')
+                return render_template('analyze.html', top_topic=topic_summary_list[0],
+                                       top_topic_terms=topic_summary_list[1], top_topic_strength=topic_summary_list[2],
+                                       summary=topic_summary_list[3])
             except Exception as e:
                 return jsonify({"error": str(e)})
         if request.method == 'GET':
             print('it is a GET method')
-            return render_template('get.html')
+            return render_template('index.html')
         return jsonify(results)
     except Exception as e:
         return jsonify({"error": str(e)})
 
 
-# @app.route('/analyze', methods=['POST'])
-# def analyze_urls():
-#     try:
-#         data = request.get_json()
-#         urls = data.get('urls')
-#         results = []
-#         for url in urls:
-#             result = get_topics_and_summary(url)
-#             results.append(result)
-#         return jsonify(results)
-#
-#     except Exception as e:
-#         return jsonify({"error": str(e)})
-#
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    try:
+        dataset = pd.read_csv(
+            '/Users/dennissaadeddin/Documents/Web Dev/Titus/topic_analysis_summarization/website_classification.csv')
+        df = dataset[['website_url', 'cleaned_website_text', 'Category']].copy()
+        urls = request.args.getlist('url')  # Use request.args to get a list of URLs
+
+        # print(df.head())
+        # print(pd.DataFrame(df.cleaned_website_text.unique()).values)
+        results = []
+        topic_summary_list = []
+        if request.method == 'POST':
+            try:
+                print('it is a POST method')
+                topic_summary_list = get_topics_and_summary(urls[0])
+                # for url in urls:
+                #     get_topics_and_summary(url)
+                #     # results.append(result)
+                # return render_template('index.html')
+            except Exception as e:
+                return jsonify({"error": str(e)})
+        return render_template('analyze.html', top_topic=topic_summary_list[0],
+                               top_topic_terms=topic_summary_list[1], top_topic_strength=topic_summary_list[2],
+                               summary=topic_summary_list[3])
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 
 if __name__ == '__main__':
     app.run(debug=False)
