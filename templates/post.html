@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client-Side POST Request</title>
+</head>
+<body>
+    <h1>POST Request</h1>
+    <form action="/analyze" method="POST">
+        <input type="text" name="url" placeholder="Enter URL">
+        <button type="submit">Analyze URL</button>
+    </form>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var urlInput = document.querySelector('input[name="url"]');
+            var url = urlInput.value;
+            var data = { "url": url };
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = "Response: " + JSON.stringify(data);
+            });
+        });
+    </script>
+</body>
+</html>
