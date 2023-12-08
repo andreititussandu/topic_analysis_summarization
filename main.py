@@ -5,10 +5,10 @@ from gensim.corpora import Dictionary
 import numpy as np
 import requests
 import re
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
-import nltk
 import pandas as pd
 
 nltk.download('punkt')
@@ -42,7 +42,8 @@ def create_lda_model(dataframe):
 
     dictionary = Dictionary(your_documents)
     corpus = [dictionary.doc2bow(doc) for doc in your_documents]
-    lda_model = LdaModel(corpus, id2word=dictionary, num_topics=len(dataframe['Category'].unique()))
+    lda_model = LdaModel(corpus, id2word=dictionary, num_topics=len(dataframe['Category'].unique())
+                         ,eval_every=1, per_word_topics=True)
     return lda_model, dictionary
 
 stop_words = set(stopwords.words('english')).union({"-", "_", "'"})
