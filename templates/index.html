@@ -2,15 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client-Side Request</title>
-</head>
-<body>
-    <h1>Request</h1>
-    <form method="POST">
-        <input type="text" name="url" placeholder="Enter URL">
-        <input type="submit"></form>
 
-        <script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h1 class="mb-4">Request</h1>
+
+    <form method="POST">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="url" placeholder="Enter URL">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="mt-4" id="results">
+        {% if webpage_topic %}
+            <p>Webpage Topic: {{ webpage_topic }}</p>
+        {% elif error %}
+            <p>Error: {{ error }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
     document.querySelector('form').addEventListener('submit', function(e) {
         e.preventDefault();
         var urlInputs = document.querySelectorAll('input[name="url"]');
@@ -22,12 +46,13 @@
 
         var urlQueryString = urls.map(url => 'url=' + encodeURIComponent(url)).join('&');
         fetch('/?' + urlQueryString, { method: 'POST' })
-            .then(response => response.json());
+            .then(response => response.json())
             .then(data => {
                 const resultsDiv = document.getElementById('results');
                 resultsDiv.innerHTML = "Response: " + JSON.stringify(data);
             });
     });
-    </script>
+</script>
+
 </body>
 </html>

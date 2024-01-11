@@ -1,4 +1,6 @@
+import gunicorn
 from flask import Flask, request, jsonify, render_template
+from flask_bootstrap import Bootstrap
 from bs4 import BeautifulSoup
 from gensim.models import LdaModel
 from gensim.corpora import Dictionary
@@ -15,6 +17,7 @@ nltk.download('punkt')
 nltk.download('stopwords')
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
 def preprocess_text(text):
     cleaned_text = re.sub(r'<.*?>', '', text)
@@ -86,6 +89,7 @@ def get_urls():
             url = request.form.get('url')
             print(f"Extracted URL: {url}")
             if url:
+                #return render_template('index.html')
                 webpage_topic = get_topics(url)
                 return jsonify(webpage_topic)
             else:
@@ -97,3 +101,5 @@ def get_urls():
 
 if __name__ == '__main__':
     app.run(debug=False)
+#source fl_venv/bin/activate - to activate virtual env
+#gunicorn --config gunicorn_config.py main:app - run in terminal
