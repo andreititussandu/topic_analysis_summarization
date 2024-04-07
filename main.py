@@ -1,4 +1,6 @@
 import os
+import time
+import cronitor
 import pickle
 import pymongo
 import pandas as pd
@@ -49,7 +51,11 @@ def get_text_content(url):
         return None
 
 
-def train_lda_model(dataframe):
+def train_lda_model(dataframe, existing_model_filename=None):
+    if existing_model_filename and os.path.exists(existing_model_filename):
+        lda_models, dictionaries, topic_labels = load_model(existing_model_filename)
+        return lda_models, dictionaries, topic_labels
+
     lda_models = {}
     dictionaries = {}
     topic_labels = {}
@@ -87,11 +93,16 @@ def load_model(filename):
 
 
 def retrain_lda_model(dataframe, filename):
+    existing_model_filename = filename
+    lda_models, dictionaries, topic_labels = train_lda_model(dataframe, existing_model_filename)
+
     if os.path.exists(filename):
-        lda_models, dictionaries, topic_labels = load_model(filename)
-    else:
-        lda_models, dictionaries, topic_labels = train_lda_model(dataframe)
-        save_model((lda_models, dictionaries, topic_labels), filename)
+        old_lda_models, old_dictionaries, old_topic_labels = load_model(filename)
+        lda_models.update(old_lda_models)
+        dictionaries.update(old_dictionaries)
+        topic_labels.update(old_topic_labels)
+
+    save_model((lda_models, dictionaries, topic_labels), filename)
 
     new_links = [link for link in dataframe['link'] if link not in lda_models]
     if new_links:
@@ -103,8 +114,8 @@ def retrain_lda_model(dataframe, filename):
                 lda_model = lda_models.get(link)
                 if dictionary and lda_model:
                     bow = dictionary.doc2bow(relevant_words)
-                    lda_model.update([bow])  # Update the model with new document
-                    save_model((lda_models, dictionaries, topic_labels), filename)  # Save updated model
+                    lda_model.update([bow])
+                    save_model((lda_models, dictionaries, topic_labels), filename)
 
         # Insert new data to MongoDB after retraining
         insert_data_to_mongodb(dataframe, lda_models, dictionaries)
@@ -187,10 +198,11 @@ def index():
 
 
 if __name__ == '__main__':
-    dataframe = pd.read_csv('test2.csv', delimiter=',')
-    lda_models, dictionaries, topic_labels = train_lda_model(dataframe)
-    save_model((lda_models, dictionaries, topic_labels), 'lda_model.pkl')
+    dataframe = pd.read_csv('test2.csv', delimiter=';')
+    lda_models, dictionaries, topic_labels = train_lda_model(dataframe, 'lda_model.pkl')
+    save_model({'lda_models': lda_models, 'dictionaries': dictionaries, 'topic_labels': topic_labels},
+               'lda_model.pkl')
     retrain_lda_model(dataframe, 'lda_model.pkl')
-    app.run(debug=False)
+    app.run(port=8080, debug=False)
 
 # gunicorn --config gunicorn_config.py main:app
