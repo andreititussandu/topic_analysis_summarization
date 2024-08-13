@@ -23,3 +23,10 @@ Clone the repository to your local machine:
 ```bash
 git clone https://github.com/andreititussandu/topic_analysis_summarization.git
 cd topic_analysis_summarization
+```
+
+### Install Dependencies
+Install the required Python packages:
+
+```bash
+pip install -r requirements.txt
