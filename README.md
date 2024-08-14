@@ -5,11 +5,10 @@ The **Topic Analysis** project is designed to automate the extraction, processin
 
 ## Features
 - **Web Scraping**: Extract data from websites.
-- **Data Extraction**: Process raw web data and extract relevant information.
 - **Preprocessing**: Clean and prepare data for analysis.
+- **Topic Analysis**: Analyzes a web page content and predicts its main topic
 - **Summarization**: Generate concise summaries from processed data.
 - **Web Server**: Handle incoming requests and trigger the processing pipeline.
-- **Data Upload**: Upload processed data to a storage service.
 
 ## Installation
 
